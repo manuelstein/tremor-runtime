@@ -5810,6 +5810,7 @@ dependencies = [
  "postgres",
  "postgres-protocol",
  "pretty_assertions",
+ "protobuf",
  "raft",
  "rand 0.8.3",
  "rdkafka",

@@ -108,6 +108,7 @@ openssl = { version = "0.10", features = ["vendored"] }
 tide = "0.15"
 
 # for raft
+protobuf = "2"
 slog = { version = "2", features = ["max_level_info", "release_max_level_warn"] }
 slog-json = "2"
 slog-term = "*"
