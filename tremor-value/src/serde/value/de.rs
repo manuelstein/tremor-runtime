@@ -21,6 +21,14 @@ use serde_ext::forward_to_deserialize_any;
 use simd_json::StaticNode;
 use std::fmt;
 
+/// Turns a value into a struct
+pub fn from_value<'de, T>(value: Value<'de>) -> Result<T, Error>
+where
+    T: Deserialize<'de>,
+{
+    T::deserialize(value)
+}
+
 impl<'de> de::Deserializer<'de> for Value<'de> {
     type Error = Error;
 
@@ -90,10 +98,41 @@ impl<'de> de::Deserializer<'de> for Value<'de> {
         }
     }
 
+    fn deserialize_enum<V>(
+        self,
+        _name: &'static str,
+        _variants: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self {
+            // Give the visitor access to each element of the sequence.
+            // Value::Array(a) => visitor.visit_seq(Array(a.iter())),
+            Value::Object(o) => visitor.visit_map(ObjectAccess {
+                i: o.iter(),
+                v: &Value::Static(StaticNode::Null),
+            }),
+            _ => Err(Error::ExpectedMap),
+        }
+    }
+
+    fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match self {
+            Value::Bytes(b) => visitor.visit_bytes(&b),
+            Value::String(s) => visitor.visit_bytes(s.as_bytes()),
+            _ => Err(Error::ExpectedMap),
+        }
+    }
+
     forward_to_deserialize_any! {
         bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
-            bytes byte_buf unit unit_struct newtype_struct seq tuple
-            tuple_struct map enum identifier ignored_any
+             byte_buf unit unit_struct newtype_struct seq tuple
+            tuple_struct map identifier ignored_any
     }
 }
 

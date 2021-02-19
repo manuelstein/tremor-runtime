@@ -40,7 +40,7 @@ mod value;
 pub use error::*;
 pub use known_key::{Error as KnownKeyError, KnownKey};
 pub use simd_json::{json, AlignedBuf, StaticNode};
-pub use value::{parse_to_value, parse_to_value_with_buffers, to_value, Object, Value};
+pub use value::{from_value, parse_to_value, parse_to_value_with_buffers, to_value, Object, Value};
 
 use simd_json::Node;
 use simd_json_derive::{Deserialize, Serialize, Tape};

@@ -5824,6 +5824,7 @@ dependencies = [
  "serenity",
  "simd-json",
  "simd-json-derive",
+ "sled",
  "smol",
  "snap",
  "surf",

@@ -16,15 +16,15 @@ mod cmp;
 mod from;
 mod serialize;
 
+pub use crate::serde::{from_value, to_value};
 use crate::{Error, Result};
 use beef::Cow;
 use halfbrown::HashMap;
 use simd_json::prelude::*;
 use simd_json::{AlignedBuf, Deserializer, Node, StaticNode};
-use std::fmt;
+use std::hash::Hash;
 use std::ops::{Index, IndexMut};
-
-pub use crate::serde::to_value;
+use std::{borrow::Borrow, fmt};
 
 /// Representation of a JSON object
 pub type Object<'value> = HashMap<Cow<'value, str>, Value<'value>>;
@@ -121,6 +121,17 @@ impl<'value> Value<'value> {
             Value::String(bs) => Some(bs.as_bytes()),
             _ => None,
         }
+    }
+
+    /// Tries to get an element of an object as bytes
+    #[inline]
+    #[must_use]
+    pub fn get_bytes<Q: ?Sized>(&self, k: &Q) -> Option<&[u8]>
+    where
+        Cow<'value, str>: Borrow<Q> + Hash + Eq,
+        Q: Hash + Eq + Ord,
+    {
+        self.get(k).and_then(Self::as_bytes)
     }
 
     /// Tries to get the value as a char
@@ -270,7 +281,6 @@ impl<'value> ValueTrait for Value<'value> {
     #[inline]
     #[must_use]
     fn as_str(&self) -> Option<&str> {
-        use std::borrow::Borrow;
         match self {
             Self::String(s) => Some(s.borrow()),
             _ => None,

@@ -25,6 +25,7 @@ pub(crate) mod elastic;
 pub(crate) mod exit;
 pub(crate) mod file;
 pub(crate) mod kafka;
+pub(crate) mod kv;
 pub(crate) mod newrelic;
 pub(crate) mod postgres;
 pub(crate) mod prelude;
